@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>TRIX/WIX — Diagnóstico 008</title><style>body{font:16px system-ui;background:#091c17;color:#e9fff8;margin:0;padding:16px}main{max-width:650px;margin:auto}h1{font-size:21px}.note{color:#b8d6cb;font-size:14px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#153128;border:1px solid #376052;border-radius:12px;padding:16px;line-height:1.6}button{background:#a9e6d2;color:#09241c;border:0;border-radius:9px;padding:14px 20px;font-weight:bold;margin:5px 5px 5px 0}</style></head><body><main><h1>TRIX/WIX — Diagnóstico 008</h1><p class="note">Somente leitura. Não acessa o microfone, não executa WebRTC, não envia dados, não usa IA ou AWS. Não substitui a interface 007.</p><pre id="result" aria-live="polite"></pre><button id="refresh">Reavaliar</button><button id="copy">Copiar diagnóstico</button><script>
+'use strict';
+const output=document.getElementById('result');
+function probe(){
+ const safe=(fn)=>{try{return fn()}catch(e){return 'ERROR_'+e.name}};
+ const yes=x=>x?'true':'false';
+ const policy=safe(()=>{const p=document.permissionsPolicy||document.featurePolicy;return p&&typeof p.allowsFeature==='function'?String(p.allowsFeature('microphone')):'UNAVAILABLE'});
+ const lines=[
+  'TRIX_WIX_VOICE_DIAGNOSTIC_008',
+  'SECURE_CONTEXT='+yes(window.isSecureContext),
+  'MEDIA_DEVICES='+yes(!!navigator.mediaDevices),
+  'GET_USER_MEDIA='+yes(typeof navigator.mediaDevices?.getUserMedia==='function'),
+  'RTC_PEER_CONNECTION='+yes(typeof window.RTCPeerConnection==='function'),
+  'MEDIA_STREAM='+yes(typeof window.MediaStream==='function'),
+  'MICROPHONE_POLICY_ALLOWED='+policy,
+  'DOCUMENT_VISIBILITY='+document.visibilityState,
+  'PAGE_PROTOCOL='+location.protocol,
+  'PAGE_ORIGIN='+location.origin,
+  'EMBEDDED_FRAME='+safe(()=>yes(window.self!==window.top)),
+  'NO_MICROPHONE_REQUEST=true',
+  'NO_NETWORK_REQUESTS=true'
+ ];
+ output.textContent=lines.join('\n');
+}
+document.getElementById('refresh').addEventListener('click',probe);
+document.getElementById('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(output.textContent)}catch(e){const range=document.createRange();range.selectNodeContents(output);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range)}});
+probe();
+</script></main></body></html>
